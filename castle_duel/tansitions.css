@@ -42,7 +42,7 @@
   transform: scale(0.8) translateX(100px);
 }
 
-card-leave-active {
+.card-leave-active {
   /* We need different timings for the leave transition */
   transition: all 1s, opacity 0.5s 0.5s;
   /* Keep it in the same horizontal position */
@@ -56,4 +56,15 @@ card-leave-active {
   opacity: 0;
   /* Zoom the card upwards */
   transform: translateX(-106px) translateY(-300px) scale(1.5);
+}
+
+.zoom-enter-active,
+.zoom-leave-active {
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.zoom-enter,
+.zoom-leave-to {
+  opacity: 0;
+  transform: scale(0.7);
 }

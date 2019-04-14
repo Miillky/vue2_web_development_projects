@@ -10,9 +10,12 @@ var state = {
   // World
   worldRatio: getWorldRatio(),
   // UI
-  activeOverlay: true,
+  activeOverlay: null,
   // Game
   turn: 1,
+  drawPile: pile,
+  discardPile: {},
+  canPlay: true,
   players: [
     {
       name: "Anne of Cleves",
@@ -45,7 +48,9 @@ var state = {
   get currentOpponent() {
     return state.players[state.currentOpponentId];
   },
-  testHand: []
+  get currentHand() {
+    return state.currentPlayer.hand;
+  }
 };
 
 //Window resize handling
