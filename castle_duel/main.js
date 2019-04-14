@@ -15,6 +15,14 @@ new Vue({
 				@card-play="testPlayCard"
 			/>
     </transition>
+    <overlay v-if="activeOverlay">
+      <component
+        :is="'overlay-content-' + activeOverlay"
+        :player="currentPlayer"
+        :opponent="currentOpponent"
+        :players="players"
+      />
+    </overlay>
 	</div>`,
   data: state,
   methods: {
@@ -53,3 +61,4 @@ new Vue({
     this.testHand = this.createTestHand();
   }
 });
+console.log(state.currentOpponent);
