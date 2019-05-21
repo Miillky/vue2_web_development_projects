@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import {$fetch} from '../plugins/fetch'
 import router from '../router'
 import maps from './maps'
+import posts from './posts'
 
 Vue.use(Vuex)
 
@@ -62,6 +63,7 @@ const store = new Vuex.Store({
 	},
 	modules: {
 		maps,
+		posts,
 	}
 })
 
