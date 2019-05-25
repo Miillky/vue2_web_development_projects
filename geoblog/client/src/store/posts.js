@@ -16,6 +16,8 @@ export default {
       posts: [],
       // ID of the selected post
       selectedPostId: null,
+			// Fetched degails for the selected post
+			selectedPostDetails: null
     }
   },
 	getters: {
@@ -25,6 +27,7 @@ export default {
 		selectedPost: state => state.posts.find(p=> p._id === state.selectedPostId),
 		// The draft has more priority than the selcted post
 		currentPost: (state, getters) => state.draft || getters.selectedPost,
+		selectedPostDetails: state => state.selectedPostDetails
 	},
 	mutations: {
 		addPost(state, value){
@@ -42,6 +45,12 @@ export default {
 		},
 		updateDraft(state, value){
 			Object.assign(state.draft, value)
+		},
+		selectedPostDetails(state, value){
+			state.selectedPostDetails = value
+		},
+		addComment(state, {post, comment}){
+			post.comments.push(comment)
 		}
 	},
 	actions: {
@@ -85,10 +94,15 @@ export default {
 			commit('addPost', result)
 			dispatch('selectedPost', result._id)
 		},
-		async selectedPost({commit}, id){
-			commit('selectedPostId', id)
-
-		},
+    async selectPost ({ commit, getters }, id) {
+      commit('selectedPostDetails', null)
+      commit('selectedPostId', id)
+      const details = await $fetch(`posts/${id}`)
+      commit('selectedPostDetails', details)
+    },
+    unselectPost ({ commit }) {
+      commit('selectedPostId', null)
+    },
 		async fetchPosts({commit, state}, {mapBounds, force}){
 			let oldBounds = state.mapBounds
 			if(force || !oldBounds || !oldBounds.equals(mapBounds)){
@@ -108,6 +122,45 @@ export default {
 					})
 				}
 			}
+		},
+		logout: {
+			handler({commit}){
+				commit('posts', {
+					posts: [],
+					mapBounds: null
+				})
+			},
+			root: true
+		},
+		'logged-in': {
+			handler({dispatch, state}){
+				if(state.mapBounds){
+					dispatch('fetchPosts', {
+						mapBounds: state.mapBounds,
+						force: true
+					})
+				}
+				if(state.scaledPostId){
+					dispatch('selectedPost', state.selectedPostId)
+				}
+			},
+			root: true
+		},
+		async sendComment({commit, rootGetters}, { post, comment } ){
+			const user = rootGetters.user
+			commit('addComment', {
+				post,
+				comment: {
+					...comment,
+					date: new Date(),
+					user_id: user._id,
+					author: user
+				}
+			}),
+			await $fetch(`posts/${post._id}/comment`, {
+				method: 'POST',
+				body: JSON.stringify(comment)
+			})
 		}
-	}
+	},
 }
